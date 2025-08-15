@@ -85,6 +85,6 @@ export const validateAdmin = (adminId: string, password: string): boolean => {
 
 export const validateCashier = (email: string, password: string): Cashier | null => {
   const data = getStorageData()
-  const cashier = data.cashiers.find((c) => c.email === email && c.password === password)
+  const cashier = data.cashiers.find((c) => c.email === email && c.password === password) 
   return cashier || null
 }
