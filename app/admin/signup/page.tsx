@@ -9,16 +9,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Users, ArrowLeft } from 'lucide-react'
+import { Shield, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 
-export default function CashierLoginPage() {
+export default function AdminSignUpPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [username, setUsername] = useState('')
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
-  const { login } = useAuth()
+  const { signUp } = useAuth()
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -27,8 +28,8 @@ export default function CashierLoginPage() {
     setIsLoading(true)
 
     try {
-      await login(password, email)
-      router.push('/cashier/dashboard')
+      await signUp(password, email, 'admin', username)
+      router.push('/admin/dashboard')
     } catch (err: any) {
       setError(err.message)
     } finally {
@@ -48,16 +49,27 @@ export default function CashierLoginPage() {
 
         <Card>
           <CardHeader className="text-center">
-            <div className="mx-auto w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mb-4">
-              <Users className="w-8 h-8 text-secondary-foreground" />
+            <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+              <Shield className="w-8 h-8 text-primary" />
             </div>
-            <CardTitle className="text-2xl">Cashier Login</CardTitle>
-            <CardDescription>Enter your credentials to access the cashier dashboard</CardDescription>
+            <CardTitle className="text-2xl">Admin Sign Up</CardTitle>
+            <CardDescription>Create your admin account to access the dashboard</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email Address</Label>
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
+                  type="text"
+                  placeholder="Enter your username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  disabled={isLoading}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   type="email"
@@ -73,7 +85,7 @@ export default function CashierLoginPage() {
                 <Input
                   id="password"
                   type="password"
-                  placeholder="Enter your password"
+                  placeholder="Enter password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={isLoading}
@@ -87,14 +99,14 @@ export default function CashierLoginPage() {
               )}
 
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? 'Signing in...' : 'Sign In'}
+                {isLoading ? 'Signing up...' : 'Sign Up'}
               </Button>
             </form>
 
             <div className="mt-4 text-center text-sm">
-              Don't have an account?{' '}
-              <Link href="/cashier/signup" className="underline">
-                Sign up
+              Already have an account?{' '}
+              <Link href="/admin/login" className="underline">
+                Login
               </Link>
             </div>
           </CardContent>
