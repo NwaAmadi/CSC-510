@@ -18,7 +18,7 @@ export interface Transaction {
   cashierId: string
   cashierName: string
   amount: number
-  type: "sale" | "refund" | "void" |'payment'
+  type: "sale" | "refund" | "void" |'payment' |'income' | 'expense'
   description: string
   timestamp: string
 }

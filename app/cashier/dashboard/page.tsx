@@ -29,7 +29,7 @@ export default function CashierDashboardPage() {
   const [isAddingTransaction, setIsAddingTransaction] = useState(false)
   const [transactionForm, setTransactionForm] = useState({
     amount: "",
-    type: "sale" as "sale" | "refund" | "void",
+    type: "sale" as "sale" | "refund" | "void" |"income" | "expense",
     description: "",
   })
   const [transactionError, setTransactionError] = useState("")
@@ -61,7 +61,7 @@ export default function CashierDashboardPage() {
     setTransactionForm((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleTransactionTypeChange = (value: "sale" | "refund" | "void") => {
+  const handleTransactionTypeChange = (value: "sale" | "refund" | "void" | "income" | "expense") => {
     setTransactionForm((prev) => ({ ...prev, type: value }))
   }
 
