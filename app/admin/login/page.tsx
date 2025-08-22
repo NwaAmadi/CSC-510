@@ -1,21 +1,22 @@
-'use client'
+"use client"
 
-import type React from 'react'
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { useAuth } from '@/contexts/auth-context'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Shield, ArrowLeft } from 'lucide-react'
-import Link from 'next/link'
+import type React from "react"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { useAuth } from "@/contexts/auth-context"
+import { validateAdmin } from "@/lib/storage"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Shield, ArrowLeft } from "lucide-react"
+import Link from "next/link"
 
 export default function AdminLoginPage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
+  const [adminId, setAdminId] = useState("")
+  const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
   const { login } = useAuth()
@@ -23,14 +24,25 @@ export default function AdminLoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError('')
+    setError("")
     setIsLoading(true)
 
     try {
-      await login(password, email)
-      router.push('/admin/dashboard')
-    } catch (err: any) {
-      setError(err.message)
+      if (!adminId.trim() || !password.trim()) {
+        setError("Please fill in all fields")
+        return
+      }
+
+      const isValid = validateAdmin(adminId.trim(), password)
+
+      if (isValid) {
+        login("admin", adminId.trim(), "Administrator")
+        router.push("/admin/dashboard")
+      } else {
+        setError("Invalid admin credentials")
+      }
+    } catch (err) {
+      setError("An error occurred during login")
     } finally {
       setIsLoading(false)
     }
@@ -40,9 +52,9 @@ export default function AdminLoginPage() {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="mb-6">
-          <Link href="/home" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
+          <Link href="/" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to selection
+            Back to Home
           </Link>
         </div>
 
@@ -57,13 +69,13 @@ export default function AdminLoginPage() {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="adminId">Admin ID</Label>
                 <Input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  id="adminId"
+                  type="text"
+                  placeholder="Enter admin ID"
+                  value={adminId}
+                  onChange={(e) => setAdminId(e.target.value)}
                   disabled={isLoading}
                 />
               </div>
@@ -87,16 +99,19 @@ export default function AdminLoginPage() {
               )}
 
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? 'Signing in...' : 'Sign In'}
+                {isLoading ? "Signing in..." : "Sign In"}
               </Button>
             </form>
 
-            <div className="mt-4 text-center text-sm">
-              Don't have an account?{' '}
-              <Link href="/admin/signup" className="underline">
-                Sign up
-              </Link>
-            </div>
+            {/*<div className="mt-6 p-4 bg-muted/50 rounded-lg">
+              <p className="text-sm text-muted-foreground text-center">
+                <strong>Demo Credentials:</strong>
+                <br />
+                Admin ID: admin123
+                <br />
+                Password: admin123
+              </p>
+            </div>*/}
           </CardContent>
         </Card>
       </div>
